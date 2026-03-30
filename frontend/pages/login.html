@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login — Student Result System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    body { display:flex; align-items:center; justify-content:center; min-height:100vh; }
+    .login-wrap { display:grid; grid-template-columns:1fr 1fr; max-width:900px; width:100%; background:var(--card); border-radius:20px; overflow:hidden; box-shadow:0 30px 80px rgba(0,0,0,0.25); }
+    .login-brand { background:var(--accent); padding:60px 40px; display:flex; flex-direction:column; justify-content:space-between; }
+    .login-brand h1 { font-family:'Syne',sans-serif; font-size:2.2rem; font-weight:800; color:#fff; line-height:1.2; }
+    .login-brand p { color:rgba(255,255,255,0.75); font-size:0.9rem; margin-top:12px; }
+    .brand-badge { background:rgba(255,255,255,0.15); border-radius:10px; padding:14px 18px; font-size:0.8rem; color:#fff; }
+    .login-form-side { padding:50px 40px; }
+    .login-form-side h2 { font-family:'Syne',sans-serif; font-size:1.6rem; color:var(--text); margin-bottom:6px; }
+    .login-form-side p { color:var(--muted); font-size:0.88rem; margin-bottom:30px; }
+    .role-tabs { display:flex; gap:8px; margin-bottom:28px; }
+    .role-tab { flex:1; padding:9px; border:2px solid var(--border); background:transparent; border-radius:8px; font-family:'DM Sans',sans-serif; font-size:0.85rem; color:var(--muted); cursor:pointer; transition:.2s; }
+    .role-tab.active { border-color:var(--accent); color:var(--accent); font-weight:500; }
+    .msg { padding:10px 14px; border-radius:8px; font-size:0.84rem; margin-bottom:18px; display:none; }
+    .msg.error { background:#ffe0e0; color:#c0392b; display:block; }
+    .msg.success { background:#e0f5ec; color:#1a7a4a; display:block; }
+  </style>
+</head>
+<body>
+<div class="login-wrap">
+  <div class="login-brand">
+    <div>
+      <h1>Student Result Management System</h1>
+      <p>Powered by DevOps practices — CI/CD, Docker, AWS</p>
+    </div>
+    <div class="brand-badge">BNM Institute of Technology<br>Dept. of Computer Science & Engg.</div>
+  </div>
+  <div class="login-form-side">
+    <h2>Welcome back</h2>
+    <p>Sign in to your account to continue</p>
+    <div class="role-tabs">
+      <button class="role-tab active" onclick="setRole('student',this)">Student</button>
+      <button class="role-tab" onclick="setRole('admin',this)">Admin</button>
+    </div>
+    <div id="msg" class="msg"></div>
+    <div class="form-group">
+      <label>Username / USN</label>
+      <input type="text" id="username" placeholder="e.g. 1BG23CS133" />
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="password" placeholder="••••••••" />
+    </div>
+    <button class="btn btn-full" onclick="handleLogin()">Sign In</button>
+    <p style="text-align:center;margin-top:18px;font-size:0.82rem;color:var(--muted)">Demo: admin/admin123 &nbsp;|&nbsp; student/student123</p>
+  </div>
+</div>
+<script>
+  let currentRole = 'student';
+  function setRole(role, el) {
+    currentRole = role;
+    document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+  }
+  function handleLogin() {
+    const u = document.getElementById('username').value.trim();
+    const p = document.getElementById('password').value.trim();
+    const msg = document.getElementById('msg');
+    msg.className = 'msg';
+    if (!u || !p) { msg.className='msg error'; msg.textContent='Please fill in all fields.'; return; }
+    // Demo redirect — replace with real API call
+    if (currentRole === 'admin' && u === 'admin' && p === 'admin123') {
+      msg.className='msg success'; msg.textContent='Redirecting...';
+      setTimeout(() => window.location.href='admin-dashboard.html', 800);
+    } else if (currentRole === 'student') {
+      msg.className='msg success'; msg.textContent='Redirecting...';
+      setTimeout(() => window.location.href='student-dashboard.html', 800);
+    } else {
+      msg.className='msg error'; msg.textContent='Invalid credentials.';
+    }
+  }
+</script>
+</body>
+</html>

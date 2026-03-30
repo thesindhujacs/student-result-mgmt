@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BNMIT | Student Result Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:   #0a0f2c;
+      --blue:   #1a3a6b;
+      --accent: #e8a020;
+      --light:  #f4f6fb;
+      --white:  #ffffff;
+      --error:  #e05252;
+      --text:   #c8d0e7;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--navy);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* animated grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(26,58,107,0.3) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(26,58,107,0.3) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: gridMove 20s linear infinite;
+      z-index: 0;
+    }
+    @keyframes gridMove {
+      0%   { background-position: 0 0; }
+      100% { background-position: 50px 50px; }
+    }
+
+    .glow {
+      position: fixed;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(232,160,32,0.12) 0%, transparent 70%);
+      top: -100px; right: -100px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 52px 48px;
+      width: 100%;
+      max-width: 440px;
+      animation: fadeUp 0.6s ease both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+    .logo-icon {
+      width: 48px; height: 48px;
+      background: var(--accent);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; font-weight: 800;
+      color: var(--navy);
+      font-family: 'Syne', sans-serif;
+      flex-shrink: 0;
+    }
+    .logo-text { line-height: 1.2; }
+    .logo-text strong {
+      display: block;
+      font-family: 'Syne', sans-serif;
+      font-size: 16px; font-weight: 700;
+      color: var(--white);
+    }
+    .logo-text span {
+      font-size: 12px;
+      color: var(--text);
+      letter-spacing: 0.04em;
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px; font-weight: 800;
+      color: var(--white);
+      margin-bottom: 6px;
+    }
+    .subtitle {
+      font-size: 14px;
+      color: var(--text);
+      margin-bottom: 36px;
+    }
+
+    .tabs {
+      display: flex;
+      background: rgba(255,255,255,0.05);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 28px;
+      gap: 4px;
+    }
+    .tab {
+      flex: 1; text-align: center;
+      padding: 9px;
+      border-radius: 7px;
+      font-size: 13px; font-weight: 500;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none; background: none;
+    }
+    .tab.active {
+      background: var(--accent);
+      color: var(--navy);
+      font-weight: 700;
+    }
+
+    .form-group { margin-bottom: 18px; }
+    label {
+      display: block;
+      font-size: 12px; font-weight: 500;
+      color: var(--text);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    input {
+      width: 100%;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 13px 16px;
+      font-size: 15px;
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    input:focus {
+      border-color: var(--accent);
+      background: rgba(255,255,255,0.09);
+    }
+    input::placeholder { color: rgba(200,208,231,0.35); }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--accent);
+      color: var(--navy);
+      border: none;
+      border-radius: 10px;
+      font-size: 15px; font-weight: 700;
+      font-family: 'Syne', sans-serif;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+    .btn:hover  { opacity: 0.9; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    .error-msg {
+      background: rgba(224,82,82,0.15);
+      border: 1px solid rgba(224,82,82,0.3);
+      color: #f08080;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .error-msg.show { display: block; }
+
+    .footer-note {
+      text-align: center;
+      font-size: 12px;
+      color: rgba(200,208,231,0.4);
+      margin-top: 28px;
+    }
+  </style>
+</head>
+<body>
+  <div class="glow"></div>
+
+  <div class="card">
+    <div class="logo-row">
+      <div class="logo-icon">B</div>
+      <div class="logo-text">
+        <strong>BNMIT</strong>
+        <span>Department of CSE</span>
+      </div>
+    </div>
+
+    <h1>Result Portal</h1>
+    
+
+    <div class="tabs">
+      <button class="tab active" onclick="setRole('admin')">Admin</button>
+      <button class="tab" onclick="setRole('student')">Student</button>
+    </div>
+
+    <div class="error-msg" id="errorMsg">Invalid credentials. Please try again.</div>
+
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" id="username" placeholder="Enter your username" />
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="password" placeholder="Enter your password / DOB (DD-MM-YYYY)" />
+    </div>
+
+    <button class="btn" onclick="handleLogin()">Sign In →</button>
+
+    <p class="footer-note">BNM Institute of Technology · Academic Year 2025-26</p>
+  </div>
+
+  <script>
+    let currentRole = 'admin';
+
+    function setRole(role) {
+      currentRole = role;
+      document.querySelectorAll('.tab').forEach((t, i) => {
+        t.classList.toggle('active', (role === 'admin' && i === 0) || (role === 'student' && i === 1));
+      });
+    }
+
+    async function handleLogin() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('errorMsg');
+      errorMsg.classList.remove('show');
+
+      if (!username || !password) {
+        errorMsg.textContent = 'Please enter both username and password.';
+        errorMsg.classList.add('show');
+        return;
+      }
+
+      try {
+        const res = await fetch('http://127.0.0.1:5000/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          localStorage.setItem('role', data.role);
+          localStorage.setItem('username', data.username);
+          if (data.usn) localStorage.setItem('usn', data.usn);
+          localStorage.setItem('username', username);
+          if (data.role === 'admin') {
+            window.location.href = 'http://127.0.0.1:5000/admin';
+          } else {
+            window.location.href = 'http://127.0.0.1:5000/student';
+          }
+        } else {
+          errorMsg.textContent = data.error || 'Login failed.';
+          errorMsg.classList.add('show');
+        }
+      } catch (e) {
+        errorMsg.textContent = 'Cannot connect to server. Make sure the backend is running.';
+        errorMsg.classList.add('show');
+      }
+    }
+
+    // Allow Enter key
+    document.addEventListener('keydown', e => { if (e.key === 'Enter') handleLogin(); });
+  </script>
+</body>
+</html>
