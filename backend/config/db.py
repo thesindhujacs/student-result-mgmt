@@ -13,20 +13,18 @@ def get_db():
     )
 
 def init_db():
-    # Connect without database first to create it
-    conn = mysql.connector.connect(
-        host=os.getenv("DB_HOST", "localhost"),
-        user=os.getenv("DB_USER", "root"),
-        password=os.getenv("DB_PASSWORD", "")
-    )
-    cursor = conn.cursor()
-    cursor.execute("CREATE DATABASE IF NOT EXISTS student_results")
-    cursor.execute("USE student_results")
-    schema_path = os.path.join(os.path.dirname(__file__), "../../database/schema.sql")
-    with open(schema_path, "r") as f:
-        for statement in f.read().split(";"):
-            if statement.strip():
-                cursor.execute(statement)
-    conn.commit()
-    cursor.close()
-    conn.close()
+    # Schema is handled by Docker via docker-entrypoint-initdb.d
+    # For local runs without Docker, create DB if not exists
+    try:
+        conn = mysql.connector.connect(
+            host=os.getenv("DB_HOST", "localhost"),
+            user=os.getenv("DB_USER", "root"),
+            password=os.getenv("DB_PASSWORD", "")
+        )
+        cursor = conn.cursor()
+        cursor.execute("CREATE DATABASE IF NOT EXISTS student_results")
+        conn.commit()
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        print(f"DB init skipped: {e}")

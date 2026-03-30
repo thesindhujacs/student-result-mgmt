@@ -38,5 +38,8 @@ app.register_blueprint(students_bp, url_prefix="/api/students")
 app.register_blueprint(subjects_bp, url_prefix="/api/subjects")
 
 if __name__ == "__main__":
-    init_db()
+    try:
+        init_db()
+    except Exception as e:
+        print(f"DB init skipped: {e}")
     app.run(host="0.0.0.0", port=5000, debug=True)
