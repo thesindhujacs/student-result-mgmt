@@ -134,7 +134,7 @@
 </div>
 
 <script>
-  const API = 'http://127.0.0.1:5000/api';
+  const API = '/api';
 
   // Security check — must be logged in as student
   const role = localStorage.getItem('role');
@@ -142,7 +142,7 @@
   const name = localStorage.getItem('username');
 
   if (!role || !usn) {
-    window.location.href = 'http://127.0.0.1:5000/login';
+    window.location.href = '/login';
   }
 
   // Show student info in header
@@ -228,7 +228,7 @@
   function logout() {
     fetch(`${API}/auth/logout`, { method: 'POST', credentials: 'include' });
     localStorage.clear();
-    window.location.href = 'http://127.0.0.1:5000/login';
+    window.location.href = '/login';
   }
 
   // Auto-load results on page load

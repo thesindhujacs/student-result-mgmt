@@ -259,7 +259,7 @@
       }
 
       try {
-        const res = await fetch('http://127.0.0.1:5000/api/auth/login', {
+        const res = await fetch('/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -273,9 +273,9 @@
           if (data.usn) localStorage.setItem('usn', data.usn);
           localStorage.setItem('username', username);
           if (data.role === 'admin') {
-            window.location.href = 'http://127.0.0.1:5000/admin';
+            window.location.href = '/admin';
           } else {
-            window.location.href = 'http://127.0.0.1:5000/student';
+            window.location.href = '/student';
           }
         } else {
           errorMsg.textContent = data.error || 'Login failed.';
