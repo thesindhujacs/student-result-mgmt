@@ -53,28 +53,18 @@ pipeline {
         }
 
         stage('Deploy to AWS EC2') {
-            steps {
-                echo 'Deploying to AWS EC2...'
-                withCredentials([sshUserPrivateKey(
-                    credentialsId: 'ec2-ssh-key',
-                    keyFileVariable: 'SSH_KEY'
-                )]) {
-                    bat """
-                        ssh -o StrictHostKeyChecking=no -i %SSH_KEY% %EC2_USER%@%EC2_HOST% ^
-                        "docker pull %DOCKER_IMAGE%:latest && ^
-                         docker stop student-app || true && ^
-                         docker rm student-app || true && ^
-                         docker run -d --name student-app ^
-                           -p 5000:5000 ^
-                           -e DB_HOST=localhost ^
-                           -e DB_USER=root ^
-                           -e DB_PASSWORD=Root@1234 ^
-                           -e DB_NAME=student_results ^
-                           %DOCKER_IMAGE%:latest"
-                    """
-                }
-            }
+    steps {
+        echo 'Deploying to AWS EC2...'
+        withCredentials([sshUserPrivateKey(
+            credentialsId: 'ec2-ssh-key',
+            keyFileVariable: 'SSH_KEY'
+        )]) {
+            bat """
+                ssh -o StrictHostKeyChecking=no -i %SSH_KEY% %EC2_USER%@%EC2_HOST% "docker pull %DOCKER_IMAGE%:latest && (docker stop student-app || echo stopped) && (docker rm student-app || echo removed) && docker run -d --name student-app -p 5000:5000 -e DB_HOST=localhost -e DB_USER=root -e DB_PASSWORD=Root@1234 -e DB_NAME=student_results %DOCKER_IMAGE%:latest"
+            """
         }
+    }
+}
     }
 
     post {
