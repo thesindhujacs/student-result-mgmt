@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "YOUR_DOCKERHUB_USERNAME/student-result-mgmt"
+        DOCKER_IMAGE = "fred1514/student-result-mgmt"
         DOCKER_TAG = "${BUILD_NUMBER}"
-        EC2_HOST = "YOUR_EC2_PUBLIC_IP"
+        EC2_HOST = "43.204.144.108"
         EC2_USER = "ubuntu"
     }
 
@@ -68,7 +68,7 @@ pipeline {
                            -p 5000:5000 ^
                            -e DB_HOST=localhost ^
                            -e DB_USER=root ^
-                           -e DB_PASSWORD=your_db_password ^
+                           -e DB_PASSWORD=Root@1234 ^
                            -e DB_NAME=student_results ^
                            %DOCKER_IMAGE%:latest"
                     """
