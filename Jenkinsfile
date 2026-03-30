@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "fred1514/student-result-mgmt"
+        DOCKER_IMAGE = "fredie1514/student-result-mgmt"
         DOCKER_TAG = "${BUILD_NUMBER}"
         EC2_HOST = "43.204.144.108"
         EC2_USER = "ubuntu"
