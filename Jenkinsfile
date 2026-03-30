@@ -32,7 +32,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image...'
-                bat "docker build -t %DOCKER_IMAGE%:%DOCKER_TAG% -f docker/Dockerfile ./backend"
+                bat "docker build -t %DOCKER_IMAGE%:%DOCKER_TAG% -f docker/Dockerfile ."
                 bat "docker tag %DOCKER_IMAGE%:%DOCKER_TAG% %DOCKER_IMAGE%:latest"
             }
         }
@@ -65,7 +65,7 @@ pipeline {
                 icacls %SSH_KEY% /remove "Everyone"
                 icacls %SSH_KEY% /grant:r "SYSTEM:F"
                 icacls %SSH_KEY% /grant:r "BUILTIN\\Administrators:F"
-                ssh -o StrictHostKeyChecking=no -i %SSH_KEY% %EC2_USER%@%EC2_HOST% "docker pull %DOCKER_IMAGE%:latest && (docker stop student-app || echo stopped) && (docker rm student-app || echo removed) && docker run -d --name student-app -p 5000:5000 -e DB_HOST=localhost -e DB_USER=root -e DB_PASSWORD=Root@1234 -e DB_NAME=student_results %DOCKER_IMAGE%:latest"
+                ssh -o StrictHostKeyChecking=no -i %SSH_KEY% %EC2_USER%@%EC2_HOST% "docker pull %DOCKER_IMAGE%:latest && (docker stop student-app || echo stopped) && (docker rm student-app || echo removed) && docker run -d --name student-app --network host -e DB_HOST=127.0.0.1 -e DB_USER=root -e DB_PASSWORD=Root@1234 -e DB_NAME=student_results %DOCKER_IMAGE%:latest"
             """
         }
     }

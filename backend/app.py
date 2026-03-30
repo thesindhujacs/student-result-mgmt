@@ -13,7 +13,11 @@ app.secret_key = "your_secret_key_here"
 CORS(app, supports_credentials=True, origins="*")
 
 # Serve frontend HTML files
-FRONTEND_DIR = os.path.join(os.path.dirname(__file__), '..', 'frontend')
+# Inside Docker: frontend/ is copied to /app/frontend/
+# When running locally: frontend/ is at ../frontend relative to backend/
+FRONTEND_DIR = os.path.join(os.path.dirname(__file__), 'frontend')
+if not os.path.exists(FRONTEND_DIR):
+    FRONTEND_DIR = os.path.join(os.path.dirname(__file__), '..', 'frontend')
 
 @app.route('/')
 def index():
