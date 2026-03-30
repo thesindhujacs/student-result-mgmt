@@ -10,6 +10,7 @@ RUN pip install --no-cache-dir -r requirements.txt \
     --trusted-host files.pythonhosted.org
 
 COPY . .
+COPY ../frontend ./frontend
 
 EXPOSE 5000
 
