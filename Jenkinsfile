@@ -60,6 +60,10 @@ pipeline {
             keyFileVariable: 'SSH_KEY'
         )]) {
             bat """
+                icacls %SSH_KEY% /inheritance:r
+                icacls %SSH_KEY% /grant:r "%USERNAME%:R"
+                icacls %SSH_KEY% /remove "BUILTIN\\Users"
+                icacls %SSH_KEY% /remove "Everyone"
                 ssh -o StrictHostKeyChecking=no -i %SSH_KEY% %EC2_USER%@%EC2_HOST% "docker pull %DOCKER_IMAGE%:latest && (docker stop student-app || echo stopped) && (docker rm student-app || echo removed) && docker run -d --name student-app -p 5000:5000 -e DB_HOST=localhost -e DB_USER=root -e DB_PASSWORD=Root@1234 -e DB_NAME=student_results %DOCKER_IMAGE%:latest"
             """
         }
