@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = "fredie1514/student-result-mgmt"
         DOCKER_TAG = "${BUILD_NUMBER}"
-        EC2_HOST = "43.204.144.108"
+        EC2_HOST = "43.204.110.12"
         EC2_USER = "ubuntu"
     }
 
