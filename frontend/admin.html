@@ -255,6 +255,17 @@
         <button class="btn-sm" onclick="loadStudentResults()">Load</button>
       </div>
       <div id="resultTable"><div class="loading">Enter a USN above to view results.</div></div>
+      <!-- ADD MARKS SECTION -->
+<div style="margin-top: 30px; padding: 20px; border-top: 1px solid #eee;">
+  <h3 style="font-family: Syne, sans-serif; margin-bottom: 15px;">Add Marks</h3>
+
+  <div class="search-bar">
+    <input type="text" id="addUSN" placeholder="Enter USN" />
+    <input type="number" id="addSubject" placeholder="Subject ID" />
+    <input type="number" id="addMarks" placeholder="Marks" />
+    <button class="btn-sm" onclick="addResult()">Add</button>
+  </div>
+</div>
     </div>
   </div>
 
@@ -421,7 +432,48 @@
     localStorage.clear();
     window.location.href = '/login';
   }
+  // ADD RESULT FUNCTION
+async function addResult() {
+  const usn = document.getElementById('addUSN').value.trim().toUpperCase();
+  const subject = document.getElementById('addSubject').value;
+  const marks = document.getElementById('addMarks').value;
 
+  if (!usn || !subject || !marks) {
+    alert("Please fill all fields");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API}/results`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-Token': localStorage.getItem('username')
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        student_usn: usn,
+        subject_id: subject,
+        marks: marks
+      })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert("✅ Result added successfully!");
+      document.getElementById('addUSN').value = '';
+      document.getElementById('addSubject').value = '';
+      document.getElementById('addMarks').value = '';
+    } else {
+      alert(data.message || "Error adding result");
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert("Server error");
+  }
+}
   loadDashboard();
 </script>
 </body>
