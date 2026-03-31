@@ -63,6 +63,13 @@ def add_result():
     if err: return err
 
     data = request.get_json()
+
+    # ===== SUPPORT BOTH FRONTEND FORMATS =====
+    data["usn"] = data.get("usn") or data.get("student_usn")
+    data["subject_code"] = data.get("subject_code") or str(data.get("subject_id"))
+    data["marks_obtained"] = data.get("marks_obtained") or data.get("marks")
+    # =========================================
+
     marks = int(data["marks_obtained"])
     grade = calculate_grade(marks)
 
@@ -81,20 +88,38 @@ def add_result():
     if not subject:
         return jsonify({"error": "Subject not found"}), 404
 
-    cursor = conn.cursor()
+    # ===== NEW LOGIC: CHECK EXISTING RESULT =====
+    cursor.execute(
+        "SELECT id FROM results WHERE student_id=%s AND subject_id=%s",
+        (student["id"], subject["id"])
+    )
+    existing = cursor.fetchone()
+    # ============================================
+
+    cursor = conn.cursor(dictionary=True)
     try:
-        cursor.execute(
-            "INSERT INTO results (student_id, subject_id, marks_obtained, grade, academic_year) VALUES (%s, %s, %s, %s, %s)",
-            (student["id"], subject["id"], marks, grade, data.get("academic_year", "2025-26"))
-        )
+        if existing:
+            # UPDATE if already exists
+            cursor.execute(
+                "UPDATE results SET marks_obtained=%s, grade=%s WHERE id=%s",
+                (marks, grade, existing["id"])
+            )
+        else:
+            # INSERT if new
+            cursor.execute(
+                "INSERT INTO results (student_id, subject_id, marks_obtained, grade, academic_year) VALUES (%s, %s, %s, %s, %s)",
+                (student["id"], subject["id"], marks, grade, data.get("academic_year", "2025-26"))
+            )
+
         conn.commit()
-        return jsonify({"message": "Result added", "grade": grade}), 201
+        return jsonify({"message": "Result added/updated", "grade": grade}), 201
+
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
     finally:
         cursor.close()
         conn.close()
-
 # PUT update result (admin only)
 @results_bp.route("/<int:result_id>", methods=["PUT"])
 def update_result(result_id):

@@ -262,6 +262,7 @@
   <div class="search-bar">
     <input type="text" id="addUSN" placeholder="Enter USN" />
     <input type="number" id="addSubject" placeholder="Subject ID" />
+    <input type="text" id="addSubjectCode" placeholder="Enter Subject Code (e.g. CS301)" />
     <input type="number" id="addMarks" placeholder="Marks" />
     <button class="btn-sm" onclick="addResult()">Add</button>
   </div>
@@ -433,12 +434,16 @@
     window.location.href = '/login';
   }
   // ADD RESULT FUNCTION
-async function addResult() {
+  async function addResult() {
   const usn = document.getElementById('addUSN').value.trim().toUpperCase();
-  const subject = document.getElementById('addSubject').value;
+  const subjectCode = document.getElementById('addSubjectCode')?.value;
+  const subjectInput = document.getElementById('addSubject').value;
   const marks = document.getElementById('addMarks').value;
 
-  if (!usn || !subject || !marks) {
+  // Use subject code if entered, otherwise fallback to subject ID
+  const subjectValue = subjectCode || subjectInput;
+
+  if (!usn || !subjectValue || !marks) {
     alert("Please fill all fields");
     return;
   }
@@ -453,27 +458,41 @@ async function addResult() {
       credentials: 'include',
       body: JSON.stringify({
         student_usn: usn,
-        subject_id: subject,
+        subject_id: subjectInput,
+        subject_code: subjectValue,
         marks: marks
       })
     });
 
-    const data = await res.json();
+    let data = {};
+try {
+  data = await res.json();
+} catch (e) {
+  data = {};
+}
 
     if (res.ok) {
-      alert("✅ Result added successfully!");
-      document.getElementById('addUSN').value = '';
-      document.getElementById('addSubject').value = '';
-      document.getElementById('addMarks').value = '';
-    } else {
-      alert(data.message || "Error adding result");
-    }
+  alert("✅ Result added successfully!");
+
+  document.getElementById('resultUSN').value = usn;
+
+  // SAFE reload (no crash)
+  loadStudentResults();
+
+  document.getElementById('addUSN').value = '';
+  document.getElementById('addSubject').value = '';
+  document.getElementById('addSubjectCode').value = '';
+  document.getElementById('addMarks').value = '';
+} else {
+  alert(data.error || "Error adding result");
+}
 
   } catch (err) {
     console.error(err);
     alert("Server error");
   }
 }
+
   loadDashboard();
 </script>
 </body>
